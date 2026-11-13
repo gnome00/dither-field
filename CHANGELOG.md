@@ -43,3 +43,5 @@ published here without that history. What it does was settled over those months:
   resizable panel; the panel takes its colours from the current preset; sections fold away;
   preset buttons show a live preview; sliders, toggles and dropdowns are custom-built; a cell
   limit control shows when large screens enlarge the cells; and reset asks before clearing.
+- With Reduce motion on, the tuner says why the texture is paused and offers "Play anyway"
+  (remembered across reloads and presets).

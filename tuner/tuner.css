@@ -219,6 +219,18 @@ h2 { font-size: 16px; font-weight: 600; line-height: 1.25; color: var(--ink); ma
 .panel-head .intro { flex: 1; }
 #collapse { flex: none; padding: 4px 8px; }
 
+/* The Reduce motion callout: a tinted block above the sections. */
+.callout {
+	display: grid;
+	gap: 8px;
+	justify-items: start;
+	margin: 0 0 16px;
+	padding: 12px;
+	border-radius: 8px;
+	background: color-mix(in oklch, var(--accent) 12%, var(--paper));
+}
+.callout p { margin: 0; color: var(--ink); }
+
 /* Sections fold away. */
 .section { border-top: 1px solid var(--rule); }
 .section summary {

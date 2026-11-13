@@ -230,4 +230,30 @@ describe('the panel', () => {
 		assert.equal(paused, true, 'the tuner must not animate at someone who asked it not to');
 		await page.close();
 	});
+
+	test('says why it is paused under reduced motion, and can play anyway', async () => {
+		const page = await browser.newPage();
+		await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+		await page.send('Page.navigate', { url: `${server.origin}/` });
+		await page.waitFor('Page.loadEventFired');
+		await page.evaluate('new Promise(r => { const t = setInterval(() => { if (window.__tuner) { clearInterval(t); r(); } }, 10); })');
+		const result = await page.evaluate(`(async () => {
+			localStorage.clear();
+			const callout = document.querySelector('.callout');
+			const before = { shown: !!callout, button: callout?.querySelector('button')?.textContent };
+			callout.querySelector('button').click();
+			await new Promise(r => setTimeout(r, 100));
+			return { before, paused: window.__tuner.state.opts.paused, button: document.querySelector('.callout button').textContent };
+		})()`);
+		assert.deepEqual(result.before, { shown: true, button: 'Play anyway' });
+		assert.equal(result.paused, false, 'Play anyway must start the animation');
+		assert.equal(result.button, 'Pause again');
+		await page.close();
+	});
+
+	test('shows no reduced-motion callout to everyone else', async () => {
+		const { page } = await openTuner();
+		assert.equal(await page.evaluate("!!document.querySelector('.callout')"), false);
+		await page.close();
+	});
 });
