@@ -12,30 +12,52 @@
 <link rel="stylesheet" href="tuner/tuner.css" />
 </head>
 <body>
+<!-- The panel comes first, so keyboard order matches the layout: controls on the left. -->
+<!-- The aside is the rounded sheet; #panel scrolls inside it, so the scrollbar never squares off its corners. -->
+<aside class="sheet">
+	<div id="panel"></div>
+	<div id="panel-handle" role="separator" aria-orientation="vertical" aria-label="Panel width" aria-valuemin="300" tabindex="0" title="Drag to widen the panel; double-click for the standard width"></div>
+</aside>
+
 <div id="stage">
 	<div id="frame" class="fill underlay">
 		<div id="host"></div>
 	</div>
 	<div id="stats"></div>
 </div>
-
-<aside id="panel"></aside>
 <button id="reopen" type="button" title="Show the controls" hidden>Controls</button>
 
-<dialog id="export-dialog">
+<dialog id="export-dialog" aria-labelledby="export-title">
+	<div class="dialog-head">
+		<h2 id="export-title">Get the code</h2>
+		<button id="close-dialog" type="button" class="ghost">Close</button>
+	</div>
 	<div class="dialog-body">
-		<h2>Get the code</h2>
+		<div class="modes" id="export-modes" role="radiogroup" aria-label="How to load the engine"></div>
 		<p class="note" id="export-note"></p>
-		<div class="modes" id="export-modes"></div>
-		<textarea id="export-box" readonly aria-label="The code for your settings"></textarea>
+		<textarea id="export-box" readonly wrap="off" spellcheck="false" aria-label="The code for your settings"></textarea>
 	</div>
 	<div class="dialog-foot">
-		<button id="copy-btn" type="button">Copy</button>
-		<button id="dl-demo" type="button">Download demo page</button>
-		<button id="dl-engine" type="button">Download engine</button>
-		<button id="dl-settings" type="button">Download settings</button>
+		<span class="foot-label" id="dl-label">Download</span>
+		<div class="downloads" role="group" aria-labelledby="dl-label">
+			<button id="dl-demo" type="button" class="ghost" title="A complete page with your settings, to open or send">Demo page</button>
+			<button id="dl-engine" type="button" class="ghost" title="dither-field.js, to host next to your page">Engine</button>
+			<button id="dl-settings" type="button" class="ghost" title="Your settings as JSON, to load back in later">Settings</button>
+		</div>
 		<span class="spacer"></span>
-		<button id="close-dialog" type="button">Close</button>
+		<button id="copy-btn" type="button" class="primary">Copy code</button>
+	</div>
+</dialog>
+
+<dialog id="reset-dialog" aria-labelledby="reset-title">
+	<div class="dialog-body">
+		<h2 id="reset-title">Reset to defaults?</h2>
+		<p class="note">This clears your tuning from this browser. It can't be undone.</p>
+	</div>
+	<div class="dialog-foot">
+		<span class="spacer"></span>
+		<button id="reset-cancel" type="button" autofocus>Cancel</button>
+		<button id="reset-confirm" type="button" class="primary">Reset to defaults</button>
 	</div>
 </dialog>
 

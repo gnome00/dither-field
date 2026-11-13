@@ -138,6 +138,37 @@ function field(x, y, th) {
 	return v / 2.2; // roughly -1 … 1
 }
 
+// How far to move a character, drawn centre/middle, so its visible shape sits in the middle of
+// the cell. Measured from the drawn pixels rather than measureText(), whose bounding boxes don't
+// match what is drawn for some fonts. Runs only when the glyph tiles are rebuilt, not per frame.
+let scratch = null;
+function glyphOffset(glyph, font, cellPx) {
+	const size = cellPx * 3; // room for a mark larger than its cell
+	scratch ||= document.createElement('canvas');
+	scratch.width = scratch.height = size;
+	const s = scratch.getContext('2d', { willReadFrequently: true });
+	if (!s) return [0, 0];
+	s.font = font;
+	s.textAlign = 'center';
+	s.textBaseline = 'middle';
+	s.fillStyle = '#000';
+	s.fillText(glyph, size / 2, size / 2);
+	const px = s.getImageData(0, 0, size, size).data;
+	let top = size, bottom = -1, left = size, right = -1;
+	for (let y = 0; y < size; y++) {
+		for (let x = 0; x < size; x++) {
+			if (px[(y * size + x) * 4 + 3] > 0) {
+				if (y < top) top = y;
+				if (y > bottom) bottom = y;
+				if (x < left) left = x;
+				if (x > right) right = x;
+			}
+		}
+	}
+	if (bottom < 0) return [0, 0]; // nothing drawn (a space, or a font without the character)
+	return [size / 2 - (left + right + 1) / 2, size / 2 - (top + bottom + 1) / 2];
+}
+
 function smoothstep(a, b, v) {
 	if (a === b) return v < a ? 0 : 1;
 	const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
@@ -400,7 +431,13 @@ export function createDitherField(host, options = {}) {
 			t.textBaseline = 'middle';
 			const glyph = (opts.layers[i] && opts.layers[i].glyph) || '';
 			if (SHAPES[glyph]) SHAPES[glyph](t, cellPx / 2, cellPx * opts.glyphScale);
-			else t.fillText(glyph, cellPx / 2, cellPx / 2);
+			else {
+				// Centre the mark's own shape in the cell. The font's middle line is not the middle
+				// of most characters: capitals and digits sit above it, so centring on it pushed
+				// O and 0 up until their tops were cut off by the cell edge.
+				const [dx, dy] = glyphOffset(glyph, t.font, cellPx);
+				t.fillText(glyph, cellPx / 2 + dx, cellPx / 2 + dy);
+			}
 			return ctx.createPattern(tile, 'repeat');
 		});
 	}

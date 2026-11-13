@@ -43,7 +43,7 @@ describe('privacy', () => {
 		// exercise the parts that could reach out: presets, the dialog, every export mode
 		await page.evaluate(`(async () => {
 			document.querySelectorAll('.preset')[1].click();
-			document.querySelector('.get-code button').click();
+			document.querySelector('.get-code .primary').click();
 			await new Promise(r => setTimeout(r, 200));
 			for (const value of ['cdn', 'host', 'inline']) {
 				const radio = [...document.querySelectorAll('#export-modes input')].find(r => r.value === value);
@@ -203,7 +203,7 @@ describe('the panel', () => {
 	test('the export dialog closes on Escape', async () => {
 		const { page } = await openTuner();
 		const closed = await page.evaluate(`(async () => {
-			document.querySelector('.get-code button').click();
+			document.querySelector('.get-code .primary').click();
 			await new Promise(r => setTimeout(r, 150));
 			const open = document.getElementById('export-dialog').open;
 			document.getElementById('export-dialog').close();
