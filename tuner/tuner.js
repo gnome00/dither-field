@@ -68,12 +68,16 @@ try {
 		// other project on github.io, and a wedged option would freeze the tab on load.
 		const cleanOpts = sanitiseConfig(saved.opts);
 		state = { ...state, ...saved, opts: { ...state.opts, ...cleanOpts, quiet: { ...state.opts.quiet, ...cleanOpts.quiet } } };
-		state.opts.paused = prefersReducedMotion;
 		state.opts.respectReducedMotion = false;
 	} else if (saved) {
-		for (const k of ['preview', 'underlay', 'exportMode', 'collapsed', 'open', 'panelWidth']) if (k in saved) state[k] = saved[k];
+		for (const k of ['preview', 'underlay', 'exportMode', 'collapsed', 'open', 'panelWidth', 'motionAnyway']) if (k in saved) state[k] = saved[k];
 	}
 } catch {}
+state.opts.paused = startPaused();
+
+// With Reduce motion on, the tuner starts on a still frame, unless the visitor chose
+// "Play anyway" (remembered, so it survives reloads and preset changes).
+function startPaused() { return prefersReducedMotion && !state.motionAnyway; }
 
 applyColours();
 const bg = createDitherField(host, state.opts);
@@ -223,6 +227,7 @@ function presetOptions(preset, base = engineDefaults()) {
 function applyPreset(preset) {
 	const base = engineDefaults();
 	const o = presetOptions(preset);
+	o.paused = startPaused();
 	state.opts = o;
 	state.colours = { ...base.colours };
 	preset.colours.forEach((c, i) => (state.colours[i + 1] = c));
@@ -411,7 +416,8 @@ function presetButtons() {
 				o.anchorQuiet = null;
 				o.cellSize = Math.max(4, Math.round(o.cellSize * 0.6));
 				o.fps = Math.min(o.fps, 10);
-				o.respectReducedMotion = true; // unlike the main preview, thumbnails stay still for reduced motion
+				// Thumbnails stay still for Reduce motion, unless the visitor chose "Play anyway".
+				o.respectReducedMotion = !state.motionAnyway;
 				o.paused = !thumbsShouldRun();
 				t.field = createDitherField(t.thumb, o);
 			}
@@ -445,6 +451,25 @@ function build() {
 			el('p', { textContent: 'An animated texture for web page backgrounds. Try a preset, move the sliders, then take the code.' }),
 			el('p', {}, el('a', { href: 'https://github.com/gnome00/dither-field', textContent: 'How it works', rel: 'noopener' }))),
 		collapse));
+
+	// Reduce motion: say why the texture is still, and offer to play it anyway.
+	if (prefersReducedMotion) {
+		const playing = !!state.motionAnyway;
+		const toggle = el('button', { type: 'button', textContent: playing ? 'Pause again' : 'Play anyway' });
+		toggle.addEventListener('click', () => {
+			state.motionAnyway = !playing;
+			o.paused = startPaused();
+			push({ paused: o.paused });
+			for (const t of thumbs) t.field?.set({ respectReducedMotion: !state.motionAnyway });
+			build();
+			document.querySelector('.callout button')?.focus();
+		});
+		panel.append(el('div', { className: 'callout', role: 'status' },
+			el('p', { textContent: playing
+				? 'Reduce motion is on for this device. The texture is playing anyway.'
+				: 'Reduce motion is on for this device, so the texture is paused on one frame. Visitors with Reduce motion on see the same still frame.' }),
+			toggle));
+	}
 
 
 	let sec = heading('Presets');
