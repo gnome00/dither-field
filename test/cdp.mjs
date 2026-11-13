@@ -30,9 +30,19 @@ export async function launch() {
 		],
 		{ stdio: ['ignore', 'ignore', 'pipe'] }
 	);
+	// A failed start must kill the Chrome it spawned: a Chrome left running keeps Node alive, so
+	// the test run never exits and a CI job hangs until GitHub's six-hour limit instead of failing.
+	// The error carries Chrome's own last words, so a CI log says why it didn't start.
+	let buf = '';
 	const wsUrl = await new Promise((resolve, reject) => {
-		let buf = '';
-		const t = setTimeout(() => reject(new Error('Chrome did not start')), 15000);
+		const fail = (why) => {
+			clearTimeout(t);
+			proc.kill('SIGKILL');
+			rmSync(profile, { recursive: true, force: true });
+			reject(new Error(`${why}\n${buf.trim().split('\n').slice(-15).join('\n')}`));
+		};
+		// Generous: a cold runner can take well over 15 seconds to bring Chrome up.
+		const t = setTimeout(() => fail('Chrome did not start within 60s'), 60000);
 		proc.stderr.on('data', (d) => {
 			buf += d;
 			const m = buf.match(/DevTools listening on (ws:\/\/\S+)/);
@@ -41,8 +51,10 @@ export async function launch() {
 				resolve(m[1]);
 			}
 		});
-		proc.on('exit', (c) => reject(new Error(`Chrome exited (${c})`)));
+		proc.on('error', (e) => fail(`Chrome could not be launched from ${CHROME}: ${e.message}`));
+		proc.on('exit', (c) => fail(`Chrome exited (${c})`));
 	});
+	proc.removeAllListeners('exit');
 
 	const ws = new WebSocket(wsUrl);
 	await new Promise((r, j) => {
