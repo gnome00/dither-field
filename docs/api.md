@@ -34,7 +34,7 @@ The values that could otherwise break the grid are clamped: `maxCells` to 64–4
 
 **Grid and marks:** `cellSize`, `maxCells`, `glyphScale`, `fontFamily`, `fontWeight`, `layers`, `layerCount`, `overlap`.
 
-`overlap` is `'stack'`, where every layer draws wherever it passes its threshold, or `'single'`, where each cell shows only the topmost layer that passes. `・` and `∷` are drawn as shapes rather than type; any other character is drawn in `fontFamily` at `fontWeight`, which the page must already have loaded.
+`overlap` is `'stack'`, where every layer draws wherever it passes its threshold, or `'single'`, where each cell shows only the topmost layer that passes. `・` and `∷` are drawn as shapes rather than type; any other character is drawn in `fontFamily` at `fontWeight`, which the page must already have loaded, and is centred on its own visible shape in the cell. Each mark is drawn inside its own cell, so a `glyphScale` large enough to make a character taller or wider than the cell cuts its edges off — for round capitals like `O` and `0` in the system monospace that is above about 1.25.
 
 Each entry in `layers` has `glyph`, `threshold`, `opacity`, `timeOffset`, and optionally `fontWeight`. Layers past `layerCount` are ignored, so a configuration can carry spares.
 

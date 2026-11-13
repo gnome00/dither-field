@@ -35,3 +35,11 @@ published here without that history. What it does was settled over those months:
   invalid anchor selector threw on every frame.
 - The tuner gained an export dialog, a collapsible panel, a phone layout, a tooltip on every
   control, and a content security policy that forbids it loading anything from another origin.
+- Typed characters are now centred on their own shape in each cell. They were centred on the
+  font's middle line, which sits below most capitals and digits, so marks like `O` and `0` were
+  pushed up and lost their tops. A mark still can't be larger than its cell: past a glyph scale
+  of about 1.25 for round capitals, edges are cut.
+- The tuner was redesigned (2026-11-13): the texture fills the window under a floating,
+  resizable panel; the panel takes its colours from the current preset; sections fold away;
+  preset buttons show a live preview; sliders, toggles and dropdowns are custom-built; a cell
+  limit control shows when large screens enlarge the cells; and reset asks before clearing.
