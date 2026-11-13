@@ -1,0 +1,15 @@
+{
+  "name": "dither-field",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An animated dithered ASCII texture for web page backgrounds. No dependencies, no build step.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "serve": "node test/serve.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

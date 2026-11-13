@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # There are no runtime dependencies; the only third-party code is the pinned GitHub Actions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>engine fixture</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  #wrap { position: relative; width: 100%; height: 100%; background: #ecefe5; }
+  #bg { position: absolute; inset: 0; overflow: hidden;
+        --dither-backdrop: transparent; --dither-layer-1: #80e862; --dither-layer-2: #2ad1b2; }
+  #text { position: relative; z-index: 1; padding: 40px; font: 700 24px system-ui, sans-serif; }
+</style>
+<div id="wrap">
+  <div id="bg"></div>
+  <div id="text"><p id="anchor" data-dither-quiet>Anchored text</p></div>
+</div>
+<script type="module">
+  import { createDitherField, DEFAULTS, VERSION } from '/dither-field.js';
+  // The tests drive the engine through these; counting clearRect calls is how they tell
+  // whether a frame was drawn at all.
+  window.__draws = 0;
+  const realClear = CanvasRenderingContext2D.prototype.clearRect;
+  CanvasRenderingContext2D.prototype.clearRect = function (...args) {
+    window.__draws++;
+    return realClear.apply(this, args);
+  };
+  window.DEFAULTS = DEFAULTS;
+  window.VERSION = VERSION;
+  window.makeField = (options = {}) => {
+    window.__draws = 0;
+    window.field?.destroy?.();
+    window.field = createDitherField(document.getElementById('bg'), options);
+    return !!window.field;
+  };
+  window.canvasHash = () => {
+    const c = document.querySelector('#bg canvas');
+    const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+    // FNV-1a over the alpha channel: enough to tell frames apart, cheap to compute.
+    let h = 2166136261;
+    for (let i = 3; i < d.length; i += 4) h = Math.imul(h ^ d[i], 16777619);
+    return h >>> 0;
+  };
+  window.inkIn = (x, y, w, h) => {
+    const c = document.querySelector('#bg canvas');
+    const k = c.width / document.getElementById('bg').clientWidth;
+    const d = c.getContext('2d').getImageData(x * k, y * k, Math.max(1, w * k), Math.max(1, h * k)).data;
+    let on = 0, n = 0;
+    for (let i = 3; i < d.length; i += 4) { if (d[i]) on++; n++; }
+    return on / n;
+  };
+  await document.fonts.ready;
+  window.__ready = true;
+</script>

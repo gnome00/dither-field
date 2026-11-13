@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>export fixture</title>
+<!-- Deliberately no CSP: index.html's policy forbids the inline scripts that exported pages
+     use, which is right for the shipped page but makes it the wrong place to run one. -->
+<style>
+  html, body { margin: 0; height: 100%; }
+  #wrap { position: relative; width: 800px; height: 500px; }
+  #bg { position: absolute; inset: 0; overflow: hidden; }
+</style>
+<div id="wrap"><div id="bg"></div></div>
+<script type="module">
+  import { createDitherField, DEFAULTS } from '/dither-field.js';
+  import { exportOptions, colourStyle, buildDemoHtml, buildSnippet } from '/tuner/export.js';
+
+  const engineSource = await (await fetch('/dither-field.js')).text();
+  const hash = (canvas) => {
+    const d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    let h = 2166136261;
+    for (let i = 3; i < d.length; i += 4) h = Math.imul(h ^ d[i], 16777619);
+    return h >>> 0;
+  };
+
+  // Draw a field on this page, exactly as the tuner would.
+  window.renderHere = (opts, colours, backdrop) => {
+    const bg = document.getElementById('bg');
+    bg.style.cssText = 'position:absolute; inset:0; overflow:hidden; ' + colourStyle({ colours, backdrop, backdropOn: true }, colours.length);
+    window.field?.destroy?.();
+    window.field = createDitherField(bg, { ...opts, paused: true });
+    window.field.setPhase(opts.startPhase ?? 0.2);
+    return hash(bg.querySelector('canvas'));
+  };
+
+  // Build what the download would give, run it, and hash the result the same way.
+  window.renderExported = async (opts, colours, backdrop, { hostile = false } = {}) => {
+    const options = exportOptions({ ...opts, paused: true });
+    const style = colourStyle({ colours, backdrop, backdropOn: true }, colours.length);
+    const html = buildDemoHtml({ options, style, engineSource, backdrop });
+    const frame = document.createElement('iframe');
+    frame.style.cssText = 'position:fixed; left:-9999px; width:800px; height:500px; border:0';
+    frame.srcdoc = html;
+    document.body.append(frame);
+    await new Promise((r) => { frame.onload = r; });
+    await new Promise((r) => setTimeout(r, 350));
+    const inner = frame.contentWindow;
+    const canvas = frame.contentDocument.querySelector('canvas');
+    const result = {
+      hash: canvas ? hash(canvas) : null,
+      ink: 0,
+      xssInner: !!inner.__xss,
+      xssOuter: !!window.__xss,
+      injected: frame.contentDocument.querySelectorAll('img, iframe, object, embed').length,
+      bodyVisibility: inner.getComputedStyle(frame.contentDocument.body).visibility,
+    };
+    if (canvas) {
+      const d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let i = 3; i < d.length; i += 4) if (d[i]) result.ink++;
+    }
+    frame.remove();
+    return result;
+  };
+
+  window.snippetFor = (opts, colours, backdrop, mode) =>
+    buildSnippet({ options: exportOptions(opts), style: colourStyle({ colours, backdrop, backdropOn: true }, colours.length), mode, engineSource });
+
+  window.DEFAULTS = DEFAULTS;
+  window.__ready = true;
+</script>

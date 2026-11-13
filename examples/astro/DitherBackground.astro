@@ -1,0 +1,43 @@
+---
+// Example: Dither Field as an Astro component. Offered as a starting point, not a
+// supported package — the engine is plain JavaScript and works anywhere.
+//
+// Copy dither-field.js next to this file, then:
+//   <main class="hero">
+//     <DitherBackground />
+//     <div class="hero-content">…</div>
+//   </main>
+// .hero needs `position: relative; isolation: isolate`, and .hero-content
+// `position: relative`, or the texture paints over the content.
+interface Props {
+	options?: Record<string, unknown>;
+	class?: string;
+}
+const { options = {}, class: className } = Astro.props;
+---
+
+<div class:list={['dither-bg', className]} data-dither-bg data-options={JSON.stringify(options)} aria-hidden="true"></div>
+
+<style is:global>
+	:where(.dither-bg) {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: hidden;
+		pointer-events: none;
+		--dither-backdrop: transparent;
+		--dither-layer-1: #80e862;
+		--dither-layer-2: #2ad1b2;
+		--dither-layer-3: #00a6da;
+		--dither-layer-4: #468dff;
+	}
+</style>
+
+<script>
+	import { createDitherField } from './dither-field.js';
+
+	for (const el of document.querySelectorAll<HTMLElement>('[data-dither-bg]:not([data-dither-ready])')) {
+		el.dataset.ditherReady = '';
+		createDitherField(el, JSON.parse(el.dataset.options || '{}'));
+	}
+</script>

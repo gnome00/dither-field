@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>no 2D context fixture</title>
+<div id="bg" style="position:absolute;inset:0"></div>
+<script type="module">
+  // A browser with canvas disabled: createDitherField must return null, not throw.
+  HTMLCanvasElement.prototype.getContext = () => null;
+  const { createDitherField } = await import('/dither-field.js');
+  let result;
+  try {
+    result = createDitherField(document.getElementById('bg')) === null ? 'null' : 'object';
+  } catch (e) {
+    result = `threw: ${e.message}`;
+  }
+  window.__result = result;
+  window.__ready = true;
+</script>

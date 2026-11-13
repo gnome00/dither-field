@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dither Field — minimal example</title>
+<style>
+  html, body { margin: 0; }
+  /* The parent is positioned, so the background can fill it.
+     isolation:isolate keeps the background's negative z-index inside this box. */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    background: #ecefe5;
+  }
+  /* z-index:-1 puts the texture behind the text rather than over it. */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    --dither-backdrop: transparent;
+    --dither-layer-1: #80e862;
+    --dither-layer-2: #2ad1b2;
+  }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+</div>
+
+<!-- This page uses an ES module, so a browser will not run it from a file:// address.
+     Serve the folder first: npm run serve, then open /examples/minimal.html.
+     For a file you can just double-click, use the tuner's "Download demo page". -->
+<script type="module">
+  import { createDitherField } from '../dither-field.js';
+  createDitherField(document.querySelector('.hero-bg'));
+</script>
+</body>
+</html>

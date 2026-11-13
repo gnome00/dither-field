@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Everything this page loads comes from this page's own origin, enforced by the browser rather
+     than promised in a README. 'self' rather than 'none' on connect-src because the export reads
+     the engine file to inline it; nothing else is ever fetched. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; base-uri 'none'; form-action 'none'" />
+<title>Dither Field — tune it, then take the code</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ecefe5'/%3E%3Cg fill='%232ad1b2'%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='7' y='4' width='2' height='2'/%3E%3Crect x='12' y='3' width='2' height='2'/%3E%3Crect x='4' y='9' width='2' height='2'/%3E%3Crect x='10' y='11' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="stylesheet" href="tuner/tuner.css" />
+</head>
+<body>
+<div id="stage">
+	<div id="frame" class="fill underlay">
+		<div id="host"></div>
+	</div>
+	<div id="stats"></div>
+</div>
+
+<aside id="panel"></aside>
+<button id="reopen" type="button" title="Show the controls" hidden>Controls</button>
+
+<dialog id="export-dialog">
+	<div class="dialog-body">
+		<h2>Get the code</h2>
+		<p class="note" id="export-note"></p>
+		<div class="modes" id="export-modes"></div>
+		<textarea id="export-box" readonly aria-label="The code for your settings"></textarea>
+	</div>
+	<div class="dialog-foot">
+		<button id="copy-btn" type="button">Copy</button>
+		<button id="dl-demo" type="button">Download demo page</button>
+		<button id="dl-engine" type="button">Download engine</button>
+		<button id="dl-settings" type="button">Download settings</button>
+		<span class="spacer"></span>
+		<button id="close-dialog" type="button">Close</button>
+	</div>
+</dialog>
+
+<script type="module" src="tuner/tuner.js"></script>
+</body>
+</html>
