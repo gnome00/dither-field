@@ -53,7 +53,7 @@ const SHAPES = {
 	},
 };
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.0.1';
 
 export const DEFAULTS = {
 	layerCount: 2, // layers past this count are spares the tuner can switch on; they are not drawn

@@ -1,8 +1,12 @@
 # Releasing
 
-How this repository gets published and updated. Written 2026-11-13, when the repository existed
-only on disk: one commit on `main`, no remote, nothing public yet. Steps 1–3 are the first
-publication and happen once; everything after applies to every release.
+How this repository gets published and updated. Steps 1–3 were the first publication and are
+done: the repository went public and `v1.0.0` was tagged on 2026-11-13. They stay here as a
+record of how it is set up. "Before anything is pushed", step 4 and "Every release after the
+first" apply to every release.
+
+`main` only changes through a pull request that the owner merges; see the project profile in
+`CLAUDE.md`.
 
 ## Before anything is pushed
 
@@ -76,8 +80,9 @@ Repeat this after every release, not only the first.
    `package.json`.
 2. Add a dated section to `CHANGELOG.md`. On the first release, replace the `1.0.0 — unreleased`
    heading and its note with the date it was tagged.
-3. `npm test`, then push to `main` and let the workflow publish.
-4. Tag the new version, push the tag, and work through step 4 above against the live site.
+3. `npm test`, then open a pull request. When it is merged, the workflow publishes the tuner.
+4. After the merge, tag the merge commit on `main` with the new version, push the tag, and work
+   through step 4 above against the live site.
 
 The version in `dither-field.js` and the tag must match: `tuner/export.js` builds the CDN URL from
 `VERSION`, so a mismatch hands visitors a dead link. `package.json`'s copy is not read by anything

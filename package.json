@@ -1,6 +1,6 @@
 {
   "name": "dither-field",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "description": "An animated dithered ASCII texture for web page backgrounds. No dependencies, no build step.",
