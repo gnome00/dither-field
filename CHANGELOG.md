@@ -1,9 +1,31 @@
 # Changelog
 
-## 1.0.0 — unreleased
+## 1.0.1 — unreleased
 
-Prepared 2026-11-13. The version is tagged when the repository is first published; the
-export's CDN link depends on that tag existing.
+Prepared 2026-11-14. The tuner's CDN snippet points at this version once it is tagged.
+
+### Engine
+
+- Typed characters are centred on their own shape in each cell. They were centred on the
+  font's middle line, which sits below most capitals and digits, so marks like `O` and `0` were
+  pushed up and lost their tops. A mark still can't be larger than its cell: past a glyph scale
+  of about 1.25 for round capitals, edges are cut.
+
+### Tuner
+
+- Redesigned: the texture fills the window under a floating, resizable panel; the panel takes
+  its colours from the current preset; sections fold away; preset buttons show a live preview;
+  sliders, toggles and dropdowns are custom-built; a cell limit control shows when large
+  screens enlarge the cells; and reset asks before clearing.
+- The tuner opens on a retuned Default preset rather than on the engine's own defaults.
+- With Reduce motion on, the tuner says why the texture is paused and offers "Play anyway"
+  (remembered across reloads and presets).
+
+### Tests
+
+- A Chrome that fails to start no longer hangs the run; the CI job also stops after 10 minutes.
+
+## 1.0.0 — 2026-11-13
 
 First public release: the engine, a browser tuner that exports working code, docs and a test suite.
 
@@ -35,13 +57,3 @@ published here without that history. What it does was settled over those months:
   invalid anchor selector threw on every frame.
 - The tuner gained an export dialog, a collapsible panel, a phone layout, a tooltip on every
   control, and a content security policy that forbids it loading anything from another origin.
-- Typed characters are now centred on their own shape in each cell. They were centred on the
-  font's middle line, which sits below most capitals and digits, so marks like `O` and `0` were
-  pushed up and lost their tops. A mark still can't be larger than its cell: past a glyph scale
-  of about 1.25 for round capitals, edges are cut.
-- The tuner was redesigned (2026-11-13): the texture fills the window under a floating,
-  resizable panel; the panel takes its colours from the current preset; sections fold away;
-  preset buttons show a live preview; sliders, toggles and dropdowns are custom-built; a cell
-  limit control shows when large screens enlarge the cells; and reset asks before clearing.
-- With Reduce motion on, the tuner says why the texture is paused and offers "Play anyway"
-  (remembered across reloads and presets).

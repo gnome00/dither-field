@@ -4,7 +4,7 @@ An animated dithered ASCII texture for web page backgrounds. No dependencies, no
 
 ![The dithered texture, with its quiet zone in the middle](docs/media/hero.png)
 
-**[Tune it in your browser →](https://gnome00.github.io/dither-field/)** — the tuner: a page of sliders over a live texture, with a button that hands you the code for whatever you have tuned. That link works once this repository is published; until then `npm run serve` gives you the same page locally.
+**[Tune it in your browser →](https://gnome00.github.io/dither-field/)** — the tuner: a page of sliders over a live texture, with a button that hands you the code for whatever you have tuned. `npm run serve` gives you the same page locally.
 
 ## Quick start
 
@@ -114,7 +114,7 @@ Needs Node 22 or newer. Tests drive Google Chrome, looked for at `/Applications/
 
 ## Releasing
 
-How this gets published and tagged is in [RELEASING.md](RELEASING.md).
+How this gets published and tagged is in [RELEASING.md](RELEASING.md). Outstanding work is in [BACKLOG.md](BACKLOG.md).
 
 ## Licence
 
